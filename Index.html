@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#123c50">
+<title>DiAppbetic</title>
+
+<style>
+:root {
+  --navy:#123c50;
+  --teal:#0d9b78;
+  --bg:#f3f7f9;
+  --white:#fff;
+  --ink:#193344;
+  --muted:#688091;
+  --line:#dce8ee;
+}
+
+* { box-sizing:border-box }
+
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font:15px/1.5 system-ui,sans-serif;
+}
+
+button,input,select { font:inherit }
+button { cursor:pointer;border:0 }
+
+header {
+  background:var(--navy);
+  color:white;
+  padding:17px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:sticky;
+  top:0;
+  z-index:5;
+}
+
+.brand { font-size:21px;font-weight:800 }
+
+main {
+  max-width:1000px;
+  margin:auto;
+  padding:20px 14px 100px;
+}
+
+h1 { font-size:30px;margin:5px 0 }
+h2 { font-size:20px;margin-top:0 }
+p { color:var(--muted) }
+
+.panel {
+  background:white;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:18px;
+  margin-bottom:16px;
+}
+
+button,.btn {
+  padding:10px 14px;
+  border-radius:10px;
+  font-weight:700;
+}
+
+.primary { background:var(--teal);color:white }
+.secondary { background:#eaf1f5;color:var(--navy) }
+.outline { background:white;border:1px solid var(--line);color:var(--navy) }
+.star { background:#fff4d5;color:#946600 }
+
+input,select {
+  width:100%;
+  padding:12px;
+  border:1px solid #d4e1e8;
+  border-radius:10px;
+  background:#fff;
+  color:var(--ink);
+}
+
+.field { margin:12px 0 }
+.field label { display:block;font-weight:700;margin-bottom:6px }
+
+.nav {
+  display:flex;
+  gap:8px;
+  margin-bottom:20px;
+  background:#e7eef2;
+  padding:6px;
+  border-radius:13px;
+}
+
+.nav button {
+  flex:1;
+  background:transparent;
+  color:var(--muted);
+}
+
+.nav button.active {
+  background:white;
+  color:var(--navy);
+}
+
+.view { display:none }
+.view.active { display:block }
+
+.product-list {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+
+.product {
+  background:white;
+  border:1px solid var(--line);
+  border-radius:13px;
+  padding:13px;
+  min-width:0;
+}
+
+.product h3 { margin:0 0 5px;font-size:16px }
+.meta { color:var(--muted);font-size:13px;overflow-wrap:anywhere }
+.product-actions { display:flex;gap:7px;flex-wrap:wrap;margin-top:12px }
+.product-actions button { font-size:12px;padding:8px }
+
+.suggestions {
+  margin-top:8px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  overflow:hidden;
+  background:white;
+}
+
+.suggestion {
+  display:block;
+  width:100%;
+  border-radius:0;
+  text-align:left;
+  background:white;
+  padding:12px;
+  border-bottom:1px solid var(--line);
+}
+
+.suggestion:last-child { border-bottom:0 }
+.suggestion:hover { background:#eaf8f3 }
+
+.nutrition {
+  width:100%;
+  border-collapse:collapse;
+  margin-top:12px;
+}
+
+.nutrition th,.nutrition td {
+  padding:10px 7px;
+  border-bottom:1px solid var(--line);
+  text-align:left;
+  font-size:13px;
+}
+
+.nutrition th { background:#edf4f7 }
+.nutrition td:not(:first-child),.nutrition th:not(:first-child) { text-align:right }
+
+.nutrition td:first-child { font-weight:650 }
+
+.toolbar {
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.toolbar input { flex:1;min-width:180px }
+
+#cameraVideo {
+  width:100%;
+  max-height:320px;
+  object-fit:contain;
+  background:#102d3b;
+  border-radius:12px;
+  margin-top:12px;
+}
+
+.status {
+  font-size:13px;
+  color:var(--muted);
+  margin-top:10px;
+  overflow-wrap:anywhere;
+}
+
+.stats {
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  margin-bottom:15px;
+}
+
+.stat {
+  background:white;
+  padding:14px;
+  border:1px solid var(--line);
+  border-radius:13px;
+}
+
+.stat strong { display:block;font-size:23px;color:var(--navy) }
+.stat span { color:var(--muted);font-size:12px }
+
+.empty {
+  padding:25px;
+  text-align:center;
+  color:var(--muted);
+  background:white;
+  border:1px dashed #cfdee5;
+  border-radius:12px;
+  grid-column:1/-1;
+}
+
+.hidden { display:none!important }
+
+footer {
+  text-align:center;
+  font-size:12px;
+  color:var(--muted);
+  padding:20px 0;
+}
+
+@media(max-width:650px) {
+  .product-list { grid-template-columns:1fr }
+  .nav button { font-size:12px;padding:10px 5px }
+  h1 { font-size:26px }
+  .panel { padding:14px }
+  .nutrition th,.nutrition td { padding:8px 4px;font-size:12px }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">◈ DiAppbetic</div>
+  <button class="secondary" onclick="loadProducts()">↻ Aktualisieren</button>
+</header>
+
+<main>
+
+  <h1 id="pageTitle">Lebensmittel suchen</h1>
+  <p id="pageDescription">
+    Suche Produkte aus deiner persönlichen Online-Datenbank.
+  </p>
+
+  <nav class="nav">
+    <button class="active" data-view="database"
+      onclick="showView('database')">🔎 Suche</button>
+
+    <button data-view="favorites"
+      onclick="showView('favorites')">⭐ Favoriten</button>
+
+    <button data-view="calculator"
+      onclick="showView('calculator')">🧮 Rechner</button>
+  </nav>
+
+  <!-- PRODUKTSUCHE -->
+  <section class="view active" id="view-database">
+
+    <div class="stats">
+      <div class="stat">
+        <strong id="productCount">0</strong>
+        <span>Produkte in der Datenbank</span>
+      </div>
+
+      <div class="stat">
+        <strong id="favoriteCount">0</strong>
+        <span>Favoriten</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Produkt suchen</h2>
+
+      <div class="field">
+        <label for="productSearch">Produktname oder Marke</label>
+        <input
+          id="productSearch"
+          type="search"
+          autocomplete="off"
+          placeholder="z. B. Knackige Mousse"
+        >
+      </div>
+
+      <div id="suggestions" class="suggestions hidden"></div>
+      <div id="searchResults" class="product-list"></div>
+
+      <p id="searchStatus" class="status"></p>
+    </div>
+
+    <div class="panel">
+      <h2>📷 Barcode scannen</h2>
+
+      <p>
+        Scanne einen Barcode, um das passende Produkt
+        in deiner eigenen Datenbank zu finden.
+      </p>
+
+      <div class="toolbar">
+        <button class="primary" onclick="startScanner()">
+          Kamera starten
+        </button>
+
+        <button class="secondary" onclick="stopScanner()">
+          Kamera stoppen
+        </button>
+      </div>
+
+      <video id="cameraVideo" class="hidden"
+        autoplay muted playsinline></video>
+
+      <p id="scannerStatus" class="status" aria-live="polite">
+        Die Kamera ist ausgeschaltet.
+      </p>
+    </div>
+
+  </section>
+
+  <!-- FAVORITEN -->
+  <section class="view" id="view-favorites">
+
+    <div class="panel">
+      <h2>⭐ Deine Favoriten</h2>
+      <p>Hier findest du deine gespeicherten Lieblingsprodukte.</p>
+
+      <div id="favoriteResults" class="product-list"></div>
+    </div>
+
+  </section>
+
+  <!-- RECHNER -->
+  <section class="view" id="view-calculator">
+
+    <div class="panel"><h2>🧮 Nährwert-Rechner</h2>
+
+      <div class="field">
+        <label for="calcProduct">Produkt auswählen</label>
+        <select id="calcProduct">
+          <option value="">Eigenen Wert eingeben</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="calcCarbs">Kohlenhydrate pro 100 g</label>
+        <input id="calcCarbs" type="number" min="0" step="any">
+      </div>
+
+      <div class="field">
+        <label for="calcGrams">Gegessene Menge in Gramm</label>
+        <input id="calcGrams" type="number" min="0" step="any">
+      </div>
+
+      <button class="primary" onclick="calculateCarbs()">
+        Berechnen
+      </button>
+
+      <button class="secondary" onclick="resetCalculator()">
+        Zurücksetzen
+      </button>
+
+      <div id="calcOutput" style="margin-top:18px"></div>
+    </div>
+
+  </section>
+
+  <!-- PRODUKTDETAILS -->
+  <section class="view" id="view-detail">
+    <div id="detailContent"></div>
+  </section>
+
+  <footer>
+    Produktdaten aus deiner Supabase-Datenbank.
+    Nährwerte mit der Verpackung vergleichen.
+  </footer>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+'use strict';
+
+/* =====================================
+   1. SUPABASE API EINSTELLUNGEN
+===================================== */
+
+const SUPABASE_URL = 'https://nshjnddjfrczfpxishuf.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_j5cyTPMrrAaOT2pcq5dt6Q_tX67V1b-';
+const TABLE_NAME = 'FoodDataBank2';
+
+/*
+  Verwende ausschließlich den öffentlichen Schlüssel.
+  Niemals den service_role- oder Secret-Key hier eintragen.
+*/
+
+
+/* =====================================
+   2. DATEN UND EINSTELLUNGEN
+===================================== */
+
+const FAVORITES_KEY = 'diappbetic_favorites_v3';
+
+const NUTRIENTS = [
+  ['energyKj', 'Energie', 'kJ'],
+  ['caloriesKcal', 'Energie', 'kcal'],
+  ['fat', 'Fett', 'g'],
+  ['saturatedFat', 'davon gesättigte Fettsäuren', 'g'],
+  ['carbs', 'Kohlenhydrate', 'g'],
+  ['sugar', 'davon Zucker', 'g'],
+  ['fiber', 'Ballaststoffe', 'g'],
+  ['protein', 'Eiweiß', 'g'],
+  ['salt', 'Salz', 'g']
+];
+
+let products = [];
+let favorites = loadFavorites();
+let cameraStream = null;
+let cameraTimer = null;
+let selectedProduct = null;
+let currentView = 'database';
+
+
+function loadFavorites() {
+  try {
+    return new Set(
+      JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]')
+        .map(String)
+    );
+  } catch {
+    return new Set();
+  }
+}
+
+function saveFavorites() {
+  localStorage.setItem(
+    FAVORITES_KEY,
+    JSON.stringify([...favorites])
+  );
+
+  updateStats();
+}
+
+function esc(value) {
+  return String(value ?? '').replace(/[&<>"']/g, char => ({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
+  })[char]);
+}
+
+function numberOrNull(value) {
+  if (value === null || value === undefined || value === '') {
+    return null;
+  }
+
+  const number = Number(value);
+
+  return Number.isFinite(number) ? number : null;
+}
+
+function format(value, unit = 'g') {
+  if (value === null || value === undefined) return '—';
+
+  return value.toLocaleString('de-DE', {
+    maximumFractionDigits: 2
+  }) + ' ' + unit;
+}
+
+
+/* =====================================
+   3. SUPABASE: PRODUKTE LADEN
+===================================== */
+
+async function loadProducts() {
+  const status = document.getElementById('searchStatus');
+
+  if (
+    SUPABASE_URL.includes('DEINE_SUPABASE_URL') ||
+    SUPABASE_KEY.includes('DEIN_PUBLIC_')
+  ) {
+    status.textContent =
+      'Bitte trage zuerst deine Supabase-URL und deinen öffentlichen API-Schlüssel ein.';
+    return;
+  }
+
+  status.textContent = 'Produkte werden geladen …';
+
+  try {
+    const endpoint =
+      SUPABASE_URL.replace(/\/$/, '') +
+      '/rest/v1/' + encodeURIComponent(TABLE_NAME) +
+      '?select=*';
+
+    const response = await fetch(endpoint, {
+      headers: {
+        apikey: SUPABASE_KEY 
+      }
+    });
+
+    if (!response.ok) {
+      const details = await response.text();
+
+      throw new Error(
+        'HTTP ' + response.status + ': ' + details
+      );
+    }
+
+    const data = await response.json();
+
+    products = data.map(normalizeProduct)
+      .filter(product => product.name);
+
+    updateStats();
+    renderSearch();
+    renderFavorites();
+    renderCalculatorSelect();
+
+    status.textContent =
+      products.length + ' Produkte erfolgreich geladen.';
+
+  } catch (error) {
+    console.error(error);
+
+    status.textContent =
+      'Fehler beim Laden der Datenbank: ' + error.message;
+  }
+}
+
+
+/* =====================================
+   4. SUPABASE-DATEN ZUORDNEN
+===================================== */
+
+function normalizeProduct(row) {
+  return {
+    id: String(row.id ?? row.name),
+
+    name: String(row.name ?? ''),
+    brand: String(row.brand ?? ''),
+    barcode: String(row.barcode ?? ''),
+    category: String(row.category ?? 'Lebensmittel'),
+
+    weight: numberOrNull(
+      row.product_weight_g ??
+      row.weight ??
+      row.total_weight_g
+    ),
+
+    nutrition: {
+      energyKj: numberOrNull(row.energy_kj),
+
+      caloriesKcal: numberOrNull(
+        row.calories_kcal ?? row.calories
+      ),
+
+      fat: numberOrNull(row.fat),
+
+      saturatedFat: numberOrNull(
+        row.saturated_fat ?? row.saturatedFat
+      ),
+
+      carbs: numberOrNull(
+        row.carbs ?? row.carbohydrates
+      ),
+
+      sugar: numberOrNull(row.sugar),
+
+      fiber: numberOrNull(
+        row.fiber ?? row.fiber_g
+      ),
+
+      protein: numberOrNull(row.protein),
+
+      salt: numberOrNull(row.salt)
+    }
+  };
+}
+
+
+/* =====================================
+   5. NAVIGATION
+===================================== */
+
+function showView(view) {
+  stopScanner();
+
+  currentView = view;
+
+  document.querySelectorAll('.view').forEach(element => {
+    element.classList.toggle(
+      'active',
+      element.id === 'view-' + view
+    );
+  });
+
+  document.querySelectorAll('[data-view]').forEach(button => {
+    button.classList.toggle(
+      'active',
+      button.dataset.view === view
+    );
+  });
+
+  const titles = {
+    database: [
+      'Lebensmittel suchen',
+      'Finde Produkte aus deiner Online-Datenbank.'
+    ],
+    favorites: [
+      'Deine Favoriten',
+      'Deine gespeicherten Lieblingsprodukte.'
+    ],
+    calculator: [
+      'Nährwert-Rechner',
+      'Berechne Kohlenhydrate für deine Portionsgröße.'
+    ],
+    detail: [
+      'Produktdetails',
+      'Alle verfügbaren Nährwerte auf einen Blick.'
+    ]
+  };
+
+  document.getElementById('pageTitle').textContent =
+    titles[view][0];
+
+  document.getElementById('pageDescription').textContent =
+    titles[view][1];
+
+  if (view === 'favorites') renderFavorites();
+  if (view === 'calculator') renderCalculatorSelect();
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+
+/* =====================================
+   6. PRODUKTSUCHE UND VORSCHLÄGE
+===================================== */
+
+const searchInput = document.getElementById('productSearch');
+
+searchInput.addEventListener('input', renderSearch);
+
+function renderSearch() {
+  const query = searchInput.value.trim().toLocaleLowerCase('de');
+
+  const matches = products.filter(product => {
+    return (
+      product.name.toLocaleLowerCase('de').includes(query) ||
+      product.brand.toLocaleLowerCase('de').includes(query)
+    );
+  });
+
+  const suggestions = document.getElementById('suggestions');
+  const results = document.getElementById('searchResults');
+
+  if (!query) {
+    suggestions.classList.add('hidden');
+
+    results.innerHTML = products.length
+      ? matches.map(productCard).join('')
+      : '<div class="empty">Noch keine Produkte geladen.</div>';
+
+    return;
+  }const limited = matches.slice(0, 12);
+
+  suggestions.innerHTML = limited.map(product => `
+    <button class="suggestion"
+      data-open="${esc(product.id)}">
+
+      <strong>${esc(product.name)}</strong><br>
+
+      <span class="meta">
+        ${esc(product.brand || product.category)}
+        · ${format(product.nutrition.carbs, 'g')} Kohlenhydrate/100 g
+      </span>
+
+    </button>
+  `).join('');
+
+  suggestions.classList.toggle('hidden', limited.length === 0);
+
+  results.innerHTML = matches.length
+    ? matches.map(productCard).join('')
+    : '<div class="empty">Kein passendes Produkt in deiner Datenbank gefunden.</div>';
+}
+
+
+/* =====================================
+   7. PRODUKTKARTEN
+===================================== */
+
+function productCard(product) {
+  const favorite = favorites.has(product.id);
+
+  return `
+    <article class="product">
+
+      <h3>${esc(product.name)}</h3>
+
+      <div class="meta">
+        ${esc(product.brand || product.category)}<br>
+        Gesamtgewicht: ${format(product.weight, 'g')}<br>
+        Kohlenhydrate: ${format(product.nutrition.carbs, 'g')}/100 g
+      </div>
+
+      <div class="product-actions">
+
+        <button class="primary"
+          data-open="${esc(product.id)}">
+          Details
+        </button>
+
+        <button class="star"
+          data-fav="${esc(product.id)}">
+          ${favorite ? '★ Favorit' : '☆ Favorisieren'}
+        </button>
+
+      </div>
+
+    </article>
+  `;
+}
+
+
+/* =====================================
+   8. PRODUKTDETAILS UND NÄHRWERTTABELLEN
+===================================== */
+
+function showProduct(id) {
+  const product = products.find(p => p.id === String(id));
+
+  if (!product) return;
+
+  selectedProduct = product;
+
+  const weight = product.weight;
+
+  const rows = NUTRIENTS.map(([key, label, unit]) => {
+    const value = product.nutrition[key];
+
+    const wholeProduct =
+      value === null || weight === null
+        ? null
+        : value * weight / 100;
+
+    return `
+      <tr>
+        <td>${label}</td>
+        <td>${format(value, unit)}</td>
+        <td>${format(wholeProduct, unit)}</td>
+      </tr>
+    `;
+  }).join('');
+
+  document.getElementById('detailContent').innerHTML = `
+    <div class="panel">
+
+      <h2>${esc(product.name)}</h2>
+
+      <p>
+        ${esc(product.brand || product.category)}
+      </p>
+
+      <p>
+        Gesamtgewicht: <strong>${format(weight, 'g')}</strong>
+      </p>
+
+      <table class="nutrition">
+
+        <thead>
+          <tr>
+            <th>Nährwert</th>
+            <th>Pro 100 g</th>
+            <th>Gesamte Packung</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          ${rows}
+        </tbody>
+
+      </table>
+
+      <h3 style="margin-top:24px">Eigene Portionsgröße</h3>
+
+      <div class="toolbar">
+        <input id="detailGrams"
+          type="number"
+          min="0"
+          step="any"
+          placeholder="Gramm eingeben">
+
+        <button class="primary" onclick="calculateDetail()">
+          Berechnen
+        </button>
+      </div>
+
+      <div id="detailOutput"></div>
+
+      <div class="product-actions">
+
+        <button class="star"
+          data-fav="${esc(product.id)}">
+          ${favorites.has(product.id)
+            ? '★ Favorit entfernen'
+            : '☆ Als Favorit speichern'}
+        </button>
+
+        <button class="secondary"
+          onclick="showView('database')">
+          Zurück zur Suche
+        </button>
+
+      </div>
+
+    </div>
+  `;
+
+  showView('detail');
+}
+
+
+function calculateDetail() {
+  if (!selectedProduct) return;
+
+  const grams = numberOrNull(
+    document.getElementById('detailGrams').value
+  );
+
+  if (grams === null) {
+    alert('Bitte eine gültige Grammzahl eingeben.');
+    return;
+  }
+
+  const product = selectedProduct;
+
+  const rows = NUTRIENTS.map(([key, label, unit]) => {const value = product.nutrition[key];
+
+    const result =
+      value === null ? null : value * grams / 100;
+
+    return `
+      <tr>
+        <td>${label}</td>
+        <td>${format(result, unit)}</td>
+      </tr>
+    `;
+  }).join('');
+
+  document.getElementById('detailOutput').innerHTML = `
+    <table class="nutrition">
+      <thead>
+        <tr>
+          <th>Nährwert für ${format(grams, 'g')}</th>
+          <th>Wert</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
+
+/* =====================================
+   9. FAVORITEN
+===================================== */
+
+document.addEventListener('click', event => {
+  const favoriteButton = event.target.closest('[data-fav]');
+
+  if (favoriteButton) {
+    toggleFavorite(favoriteButton.dataset.fav);
+    return;
+  }
+
+  const openButton = event.target.closest('[data-open]');
+
+  if (openButton) {
+    showProduct(openButton.dataset.open);
+  }
+});
+
+
+function toggleFavorite(id) {
+  id = String(id);
+
+  if (favorites.has(id)) {
+    favorites.delete(id);
+  } else {
+    favorites.add(id);
+  }
+
+  saveFavorites();
+
+  renderSearch();
+  renderFavorites();
+
+  if (selectedProduct && selectedProduct.id === id) {
+    showProduct(id);
+  }
+}
+
+
+function renderFavorites() {
+  const list = products.filter(product =>
+    favorites.has(product.id)
+  );
+
+  document.getElementById('favoriteResults').innerHTML =
+    list.length
+      ? list.map(productCard).join('')
+      : '<div class="empty">Du hast noch keine Favoriten gespeichert.</div>';
+}
+
+
+function updateStats() {
+  document.getElementById('productCount').textContent =
+    products.length;
+
+  document.getElementById('favoriteCount').textContent =
+    products.filter(p => favorites.has(p.id)).length;
+}
+
+
+/* =====================================
+   10. NÄHRWERT-RECHNER
+===================================== */
+
+function renderCalculatorSelect() {
+  const select = document.getElementById('calcProduct');
+  const oldValue = select.value;
+
+  select.innerHTML =
+    '<option value="">Eigenen Wert eingeben</option>' +
+    products.map(product => `
+      <option value="${esc(product.id)}">
+        ${esc(product.name)}
+      </option>
+    `).join('');
+
+  if (products.some(p => p.id === oldValue)) {
+    select.value = oldValue;
+  }
+}
+
+
+document.getElementById('calcProduct').addEventListener(
+  'change',
+  event => {
+    const product = products.find(
+      p => p.id === event.target.value
+    );
+
+    document.getElementById('calcCarbs').value =
+      product?.nutrition.carbs ?? '';
+
+    document.getElementById('calcOutput').innerHTML = '';
+  }
+);
+
+
+function calculateCarbs() {
+  const carbs = numberOrNull(
+    document.getElementById('calcCarbs').value
+  );
+
+  const grams = numberOrNull(
+    document.getElementById('calcGrams').value
+  );
+
+  if (carbs === null || grams === null) {
+    alert('Bitte Kohlenhydrate und Grammzahl eingeben.');
+    return;
+  }
+
+  const total = carbs * grams / 100;
+
+  document.getElementById('calcOutput').innerHTML = `
+    <div class="stat">
+      <span>Kohlenhydrate für ${format(grams, 'g')}</span>
+      <strong>${format(total, 'g')}</strong>
+      <span>${format(carbs, 'g')} pro 100 g</span>
+    </div>
+  `;
+}
+
+
+function resetCalculator() {
+  document.getElementById('calcProduct').value = '';
+  document.getElementById('calcCarbs').value = '';
+  document.getElementById('calcGrams').value = '';
+  document.getElementById('calcOutput').innerHTML = '';
+}
+
+
+/* =====================================
+   11. BARCODE-SCANNER
+===================================== */
+
+async function startScanner() {
+  const video = document.getElementById('cameraVideo');
+  const status = document.getElementById('scannerStatus');
+
+  if (!navigator.mediaDevices?.getUserMedia) {
+    status.textContent ='Die Kamera benötigt HTTPS oder localhost.';
+    return;
+  }
+
+  if (!('BarcodeDetector' in window)) {
+    status.textContent =
+      'Dieser Browser unterstützt die Barcode-Erkennung nicht. Bitte verwende einen kompatiblen Browser.';
+    return;
+  }
+
+  try {
+    stopScanner();
+
+    cameraStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: 'environment' } },
+      audio: false
+    });
+
+    video.srcObject = cameraStream;
+    video.classList.remove('hidden');
+
+    await video.play();
+
+    const detector = new BarcodeDetector({
+      formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e']
+    });
+
+    status.textContent =
+      'Kamera aktiv. Halte den Barcode vor die Kamera.';
+
+    const scan = async () => {
+      if (!cameraStream) return;
+
+      try {
+        const codes = await detector.detect(video);
+
+        if (codes.length) {
+          const barcode = String(codes[0].rawValue || '');
+
+          if (barcode) {
+            const product = products.find(
+              p => p.barcode === barcode
+            );
+
+            stopScanner();
+
+            if (product) {
+              status.textContent =
+                'Produkt gefunden: ' + product.name;
+
+              showProduct(product.id);
+            } else {
+              status.textContent =
+                'Der Barcode ' + barcode +
+                ' wurde erkannt, ist aber nicht in deiner Datenbank.';
+            }
+
+            return;
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+
+      cameraTimer = setTimeout(scan, 300);
+    };
+
+    scan();
+
+  } catch (error) {
+    status.textContent =
+      'Kamera konnte nicht gestartet werden. Prüfe die Berechtigungen.';
+    console.error(error);
+
+    stopScanner();
+  }
+}
+
+
+function stopScanner() {
+  if (cameraTimer) {
+    clearTimeout(cameraTimer);
+    cameraTimer = null;
+  }
+
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(track => track.stop());
+    cameraStream = null;
+  }
+
+  const video = document.getElementById('cameraVideo');
+
+  if (video) {
+    video.pause();
+    video.srcObject = null;
+    video.classList.add('hidden');
+  }
+}
+
+
+window.addEventListener('pagehide', stopScanner);
+
+
+/* =====================================
+   12. START
+===================================== */
+
+renderFavorites();
+renderCalculatorSelect();
+updateStats();
+loadProducts();
+
+</script>
+</body>
+  </html>
